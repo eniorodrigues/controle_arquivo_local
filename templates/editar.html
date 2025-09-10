@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Registro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-6">Editar Registro</h1>
+
+        <form action="/atualizar/{{ registro.Id }}" method="post" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+                <label for="cliente" class="block text-sm font-medium text-gray-700">Cliente</label>
+                <input id="cliente" name="cliente" value="{{ registro.Cliente }}" class="p-2 border rounded w-full" required>
+            </div>
+
+            <div>
+                <label for="responsavel" class="block text-sm font-medium text-gray-700">Responsável</label>
+                <input id="responsavel" name="responsavel" value="{{ registro.Responsavel }}" class="p-2 border rounded w-full">
+            </div>
+
+            <div>
+                <label for="al_2023" class="block text-sm font-medium text-gray-700">AL 2023</label>
+                <select id="al_2023" name="al_2023" class="p-2 border rounded w-full">
+                    <option {{ 'selected' if registro.AL_2023 == 'Sim' else '' }}>Sim</option>
+                    <option {{ 'selected' if registro.AL_2023 == 'Não' else '' }}>Não</option>
+                </select>
+            </div>
+
+            <div>
+                <label for="status_rel_2024" class="block text-sm font-medium text-gray-700">Status Rel. 2024</label>
+                <select id="status_rel_2024" name="status_rel_2024" class="p-2 border rounded w-full">
+                    {% for opt in ['Iniciar', 'Em processo', 'Finalizado', 'N/A'] %}
+                        <option {{ 'selected' if registro.Status_Rel_2024 == opt else '' }}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="tipo_al" class="block text-sm font-medium text-gray-700">Tipo AL</label>
+                <select id="tipo_al" name="tipo_al" class="p-2 border rounded w-full">
+                    {% for opt in ['Arquivo Local - Completo', 'Arquivo Local - Simplificado', 'Arquivo Local - Dispensado', 'N/A', 'Não Informado'] %}
+                        <option {{ 'selected' if registro.Tipo_AL == opt else '' }}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label for="anexos_al_rel" class="block text-sm font-medium text-gray-700">Anexos AL Rel</label>
+                <select id="anexos_al_rel" name="anexos_al_rel" class="p-2 border rounded w-full">
+                    {% for opt in ['Pendente', 'Feito', 'N/A'] %}
+                        <option {{ 'selected' if registro.Anexos_AL_Rel == opt else '' }}>{{ opt }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="status_trello" class="block text-sm font-medium text-gray-700">Status Trello</label>
+                <input id="status_trello" name="status_trello" value="{{ registro.Status_Trello }}" class="p-2 border rounded w-full">
+            </div>
+
+            <div class="md:col-span-2">
+                <label for="observacoes" class="block text-sm font-medium text-gray-700">Observações</label>
+                <textarea id="observacoes" name="observacoes" class="p-2 border rounded w-full" rows="4">{{ registro.Observações }}</textarea>
+            </div>
+
+            <div class="md:col-span-2 flex justify-end mt-4">
+                <button type="submit" class="bg-green-600 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition duration-200">
+                    Salvar Alterações
+                </button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

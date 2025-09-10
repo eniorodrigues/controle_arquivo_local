@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Controle de Arquivo Local</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">Controle de Arquivo Local</h1>
+
+        <!-- Formulário para Adicionar -->
+        <form action="/add" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white p-6 rounded shadow mb-10">
+            <input name="cliente" placeholder="Cliente" required class="p-2 border rounded">
+            <input name="responsavel" placeholder="Responsável" class="p-2 border rounded">
+            <select name="al_2023" class="p-2 border rounded">
+                <option>Sim</option>
+                <option>Não</option>
+            </select>
+            <select name="status_rel_2024" class="p-2 border rounded">
+                <option>Iniciar</option>
+                <option>Em processo</option>
+                <option>Finalizado</option>
+                <option>N/A</option>
+            </select>
+            <select name="tipo_al" class="p-2 border rounded">
+                <option>Arquivo Local - Completo</option>
+                <option>Arquivo Local - Simplificado</option>
+                <option>Arquivo Local - Dispensado</option>
+                <option>N/A</option>
+                <option>Não Informado</option>
+            </select>
+            <select name="anexos_al_rel" class="p-2 border rounded">
+                <option>Pendente</option>
+                <option>Feito</option>
+                <option>N/A</option>
+            </select>
+            <input name="status_trello" placeholder="Status Trello" class="p-2 border rounded">
+            <textarea name="observacoes" placeholder="Observações" class="p-2 border rounded md:col-span-2"></textarea>
+            <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded col-span-2 hover:bg-blue-700">
+                Adicionar Registro
+            </button>
+        </form>
+
+        <!-- Tabela de Registros -->
+        <table class="w-full bg-white rounded shadow text-sm">
+            <thead class="bg-gray-200 text-left">
+                <tr>
+                    <th class="p-2">Cliente</th>
+                    <th class="p-2">Responsável</th>
+                    <th class="p-2">AL 2023</th>
+                    <th class="p-2">Status 2024</th>
+                    <th class="p-2">Tipo AL</th>
+                    <th class="p-2">Anexos</th>
+                    <th class="p-2">Trello</th>
+                    <th class="p-2">Observações</th>
+                    <th class="p-2">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for r in registros %}
+                <tr class="border-t">
+                    <td class="p-2">{{ r.cliente }}</td>
+                    <td class="p-2">{{ r.responsavel }}</td>
+                    <td class="p-2">{{ r.al_2023 }}</td>
+                    <td class="p-2">{{ r.status_rel_2024 }}</td>
+                    <td class="p-2">{{ r.tipo_al }}</td>
+                    <td class="p-2">{{ r.anexos_al_rel }}</td>
+                    <td class="p-2">{{ r.status_trello or '' }}</td>
+                    <td class="p-2">{{ r.observacoes or '' }}</td>
+                    <td class="p-2">
+                        <button onclick="editarRegistro('{{ r.id }}')" class="text-blue-600 hover:underline">Editar</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal de edição -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded w-full max-w-2xl relative">
+            <h2 class="text-xl font-bold mb-4">Editar Registro</h2>
+            <form id="form-editar" method="POST">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input name="cliente" id="edit-cliente" class="p-2 border rounded" required>
+                    <input name="responsavel" id="edit-responsavel" class="p-2 border rounded">
+                    <select name="al_2023" id="edit-al_2023" class="p-2 border rounded">
+                        <option>Sim</option><option>Não</option>
+                    </select>
+                    <select name="status_rel_2024" id="edit-status_rel_2024" class="p-2 border rounded">
+                        <option>Iniciar</option><option>Em processo</option><option>Finalizado</option><option>N/A</option>
+                    </select>
+                    <select name="tipo_al" id="edit-tipo_al" class="p-2 border rounded">
+                        <option>Arquivo Local - Completo</option>
+                        <option>Arquivo Local - Simplificado</option>
+                        <option>Arquivo Local - Dispensado</option>
+                        <option>N/A</option><option>Não Informado</option>
+                    </select>
+                    <select name="anexos_al_rel" id="edit-anexos_al_rel" class="p-2 border rounded">
+                        <option>Pendente</option><option>Feito</option><option>N/A</option>
+                    </select>
+                    <input name="status_trello" id="edit-status_trello" class="p-2 border rounded">
+                    <textarea name="observacoes" id="edit-observacoes" class="p-2 border rounded md:col-span-2"></textarea>
+                    <input type="hidden" id="edit-id">
+                </div>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button" onclick="fecharModal()" class="bg-gray-400 text-white py-2 px-4 rounded">Cancelar</button>
+                    <button type="submit" class="bg-green-600 text-white py-2 px-4 rounded">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts JS -->
+    <script>
+        function editarRegistro(id) {
+            fetch(`/get/${id}`)
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('edit-id').value = id;
+                    document.getElementById('edit-cliente').value = data.cliente || '';
+                    document.getElementById('edit-responsavel').value = data.responsavel || '';
+                    document.getElementById('edit-al_2023').value = data.al_2023 || '';
+                    document.getElementById('edit-status_rel_2024').value = data.status_rel_2024 || '';
+                    document.getElementById('edit-tipo_al').value = data.tipo_al || '';
+                    document.getElementById('edit-anexos_al_rel').value = data.anexos_al_rel || '';
+                    document.getElementById('edit-status_trello').value = data.status_trello || '';
+                    document.getElementById('edit-observacoes').value = data.observacoes || '';
+                    document.getElementById('modal').classList.remove('hidden');
+                });
+        }
+
+        function fecharModal() {
+            document.getElementById('modal').classList.add('hidden');
+        }
+
+        document.getElementById('form-editar').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const formData = new FormData(this);
+            fetch(`/edit/${id}`, {
+                method: 'POST',
+                body: formData
+            }).then(() => {
+                fecharModal();
+                location.reload();
+            });
+        });
+    </script>
+</body>
+</html>
