@@ -1,11 +1,15 @@
+import os
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client, Client
+from dotenv import load_dotenv
+
+load_dotenv() # Carrega as variáveis do arquivo .env
 
 app = Flask(__name__)
 
 # ---------------- SUPABASE ----------------
-url ="https://fwrrfmzdirgstbidpuad.supabase.co"
-key ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3cnJmbXpkaXJnc3RiaWRwdWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwODU1OTAsImV4cCI6MjA3MjY2MTU5MH0.HIeEuRNpqIbwAN8yaDEUbm1TLlGX_E12ULvH5-wwKlI"
+url = os.getenv("SUPABASE_URL")
+key = os.getenv("SUPABASE_KEY")
 TABLE_NAME = "controle_arquivo_local"  # Nome da tabela no Supabase
  
 supabase: Client = create_client(url, key)
