@@ -21,10 +21,22 @@ def index():
     registros = data.data
     return render_template("index.html", registros=registros)
 
+# @app.route("/api/dados", methods=["GET"])
+# def api_dados():
+#     data = supabase.table(TABLE_NAME).select("*").execute()
+#     return jsonify(data.data)
+
 @app.route("/api/dados", methods=["GET"])
 def api_dados():
+    token = request.args.get("token")
+    expected_token = os.getenv("SUPABASE_KEY")  # Define no .env ou no ambiente da Render
+
+    if token != expected_token:
+        return jsonify({"error": "Acesso não autorizado"}), 401
+
     data = supabase.table(TABLE_NAME).select("*").execute()
     return jsonify(data.data)
+
 
 @app.route("/edit/<int:record_id>", methods=["POST"])
 def edit_record(record_id):
