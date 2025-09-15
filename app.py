@@ -7,15 +7,12 @@ app = Flask(__name__)
 url ="https://fwrrfmzdirgstbidpuad.supabase.co"
 key ="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3cnJmbXpkaXJnc3RiaWRwdWFkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwODU1OTAsImV4cCI6MjA3MjY2MTU5MH0.HIeEuRNpqIbwAN8yaDEUbm1TLlGX_E12ULvH5-wwKlI"
 TABLE_NAME = "controle_arquivo_local"  # Nome da tabela no Supabase
-
-# supabase = create_client(url, key)
-# response = supabase.table("controle_arquivo_local").select("*").execute()
  
 supabase: Client = create_client(url, key)
 
 # ---------------- ROTAS ----------------
 
-@app.route("/")
+@app.route("/") 
 def index():
     data = supabase.table(TABLE_NAME).select("*").execute()
     registros = data.data
