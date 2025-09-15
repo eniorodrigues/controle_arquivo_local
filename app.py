@@ -1,31 +1,25 @@
 import os
-
-
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
-load_dotenv() # Carrega as variáveis do arquivo .env
+# Carregar variáveis de ambiente do .env
+load_dotenv()
 
 app = Flask(__name__)
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port, debug=True)
 
-# ---------------- SUPABASE ----------------
+# Supabase
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
-TABLE_NAME = "controle_arquivo_local"  # Nome da tabela no Supabase
- 
-supabase: Client = create_client(url, key)
+TABLE_NAME = "controle_arquivo_local"
 
-# ---------------- ROTAS ----------------
+supabase: Client = create_client(url, key)
 
 @app.route("/") 
 def index():
     data = supabase.table(TABLE_NAME).select("*").execute()
     registros = data.data
     return render_template("index.html", registros=registros)
-
 
 @app.route("/edit/<int:record_id>", methods=["POST"])
 def edit_record(record_id):
@@ -42,7 +36,6 @@ def edit_record(record_id):
     supabase.table(TABLE_NAME).update(payload).eq("id", record_id).execute()
     return jsonify({"success": True})
 
-
 @app.route("/get/<int:record_id>")
 def get_record(record_id):
     data = supabase.table(TABLE_NAME).select("*").eq("id", record_id).execute()
@@ -50,6 +43,6 @@ def get_record(record_id):
         return jsonify(data.data[0])
     return jsonify({"error": "Registro não encontrado"}), 404
 
-
 if __name__ == "__main__":
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=True)
