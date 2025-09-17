@@ -23,8 +23,8 @@ def index():
 
 # @app.route("/api/dados", methods=["GET"])
 # def api_dados():
-#     data = supabase.table(TABLE_NAME).select("*").execute()
-#     return jsonify(data.data)
+#data = supabase.table(TABLE_NAME).select("*").execute()
+#return jsonify(data.data)
 
 @app.route("/api/dados", methods=["GET"])
 def api_dados():
